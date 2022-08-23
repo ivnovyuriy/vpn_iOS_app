@@ -6,16 +6,18 @@ then echo "Sorry, you are not root." && exit 1
 fi
 
 
-# query user for variables
-echo -n "Hostname: "
-read hostname
-echo -n "VPN Username: "
-read user
-echo -n "Password (must not contain \"): "
-read -s pass
-echo
-echo "You may add more users at a later time by editing ~/vpn/ipsec.secrets"
-echo
+# # query user for variables
+# echo -n "Hostname: "
+# read hostname
+# echo -n "VPN Username: "
+# read user
+# echo -n "Password (must not contain \"): "
+# read -s pass
+
+# DO NOT QUERY USER FOR VARIABLES 
+echo -n "Hardcoding values for hostname, user, pass etc"
+
+
 
 mkdir -p ~/pki/{cacerts,certs,private}
 chmod 700 ~/pki
@@ -26,6 +28,12 @@ chmod 700 ~/pki
 ###########################
 
 echo "Preparing scripts and other files..."
+echo "Pull these values from AWS Secret manager instead"
+
+hostname = "yuriy_mega_server"
+user = "admin"
+password = "cyka_ebannayaaa!!"
+echo "You may add more users at a later time by editing ~/vpn/ipsec.secrets"
 
 cat > gen_certs.sh <<EOF
 #!/bin/bash
