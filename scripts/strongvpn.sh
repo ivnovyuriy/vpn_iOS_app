@@ -30,9 +30,9 @@ chmod 700 ~/pki
 echo "Preparing scripts and other files..."
 echo "Pull these values from AWS Secret manager instead"
 
-hostname = "yuriy_mega_server"
-user = "admin"
-password = "cyka_ebannayaaa!!"
+hostname="yuriy_mega_server"
+user="admin"
+password="cyka_ebannayaaa!!"
 echo "You may add more users at a later time by editing ~/vpn/ipsec.secrets"
 
 cat > gen_certs.sh <<EOF

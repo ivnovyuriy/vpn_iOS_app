@@ -30,19 +30,18 @@ resource "aws_instance" "vpn-server" {
     }
  
   }
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "chmod +x /tmp/strongvpn.sh",
-  #     "sudo /tmp/strongvpn.sh",
-  #   ]
-  #   connection {
-  #    type     = "ssh"
-  #    user     = "ubuntu"
-  #    private_key = file("yuriy_ec2.pem")
-  #    host     = aws_instance.vpn-server.public_ip
-
-  #   }
-  # }
+   provisioner "remote-exec" {
+     inline = [
+       "chmod +x /tmp/strongvpn.sh",
+       "sudo /tmp/strongvpn.sh",
+     ]
+     connection {
+      type     = "ssh"
+      user     = "ubuntu"
+      private_key = file("yuriy_ec2.pem")
+      host     = aws_instance.vpn-server.public_ip
+     }
+   }
 }
 
 
