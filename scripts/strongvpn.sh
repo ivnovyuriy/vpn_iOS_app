@@ -1,4 +1,7 @@
 #!/bin/bash
+
+exec > >(tee -a file.log)
+
 set -e
 
 if test "$(whoami)" != "root"
@@ -140,8 +143,9 @@ EOF
 ################################
 
 echo "Installing dependencies..."
-apt-get update
-apt-get install strongswan strongswan-pki
+sudo apt-get update -y && sudo apt-get upgrade -y
+echo "Finiched updating packages"
+sudo apt-get install strongswan strongswan-pki -y
 
 
 ##########################
@@ -162,12 +166,21 @@ mv /etc/ipsec.conf{,.original}
 mv ipsec.conf /etc/ipsec.conf
 mv ipsec.secrets /etc/ipsec.secrets
 
+# #########################
+# ##### RESTART IPSEC #####
+# #########################
+
+# echo "Restarting IPsec..."
+# set +e
+# ipsec restart &>/dev/null
+# set -e
 
 echo "Restart Strongswan"
-systemctl restart strongswan
+systemctl restart strongswan.service
 
-# echo "Check Strongswan status"
-# systemctl status strongswan
+
+echo "Check Strongswan status"
+systemctl status strongswan
 
 ##############################
 ##### CONFIGURE IPTABLES #####
@@ -199,15 +212,6 @@ then sysctl --system &>/dev/null
 else "NOTE: reboot may be necessary, could not live-reload kernel params."
 fi
 
-
-# #########################
-# ##### RESTART IPSEC #####
-# #########################
-
-# echo "Restarting IPsec..."
-# set +e
-# ipsec restart &>/dev/null
-# set -e
 
 
 ####################
