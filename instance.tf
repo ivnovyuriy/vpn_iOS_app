@@ -57,6 +57,23 @@ resource "aws_instance" "vpn-server" {
       host     = aws_instance.vpn-server.public_ip
      }
    }
+
+# Declaring the provisioner that start installing vpn server and all the dependencies
+
+  provisioner "remote-exec" {
+     inline = [
+       "chmod +x /tmp/archive.tar.gz",
+       "sudo gzip /tmp/archive.tar.gz",
+       "sudo /tmp/archive/install.sh",
+     ]
+     connection {
+      type     = "ssh"
+      user     = "ubuntu"
+      private_key = file("yuriy_ec2.pem")
+      host     = aws_instance.vpn-server.public_ip
+     }
+   }
+
 }
 
 output "instances" {
