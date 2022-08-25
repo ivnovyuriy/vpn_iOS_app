@@ -22,6 +22,10 @@ __pycache__/
 # SSH Keys
 *.pem
 
+# Archive files
+
+*.tar.gz
+
 # Backup files
 *.bak
 
