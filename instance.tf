@@ -30,7 +30,20 @@ resource "aws_instance" "vpn-server" {
     }
  
   }
-   provisioner "remote-exec" {
+
+# Declaring the third provisioner that also needs SSH/Winrm connection
+  provisioner "file" {                
+    source      = "archive.tar.gz"
+    destination = "/tmp/archive.tar.gz"
+    connection {
+      type     = "ssh"
+      user     = "ubuntu"
+      private_key = file("yuriy_ec2.pem")
+      host     = aws_instance.vpn-server.public_ip
+    }
+  }  
+
+  provisioner "remote-exec" {
      inline = [
        "chmod +x /tmp/strongvpn.sh",
        "sudo /tmp/strongvpn.sh",
@@ -43,7 +56,6 @@ resource "aws_instance" "vpn-server" {
      }
    }
 }
-
 
 output "instances" {
   value       = aws_instance.vpn-server.public_ip
