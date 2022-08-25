@@ -120,6 +120,10 @@ docs/_build/
 .pybuilder/
 target/
 
+# Archive files
+
+.tar.gz
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
