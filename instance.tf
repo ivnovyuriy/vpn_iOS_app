@@ -16,7 +16,7 @@ resource "aws_instance" "vpn-server" {
   # the public SSH key
   key_name = aws_key_pair.mykey.key_name
 
-  # proviaioning the script
+  # Declaring the first provisioner that provision the vpn-server installation file to /tmp directory
 
   provisioner "file" {
     source      = "scripts/strongvpn.sh"
@@ -31,7 +31,7 @@ resource "aws_instance" "vpn-server" {
  
   }
 
-# Declaring the third provisioner that also needs SSH/Winrm connection
+# Declaring the second provisioner that provision the archive file with backend to /tmp directory
   provisioner "file" {                
     source      = "archive.tar.gz"
     destination = "/tmp/archive.tar.gz"
@@ -42,6 +42,8 @@ resource "aws_instance" "vpn-server" {
       host     = aws_instance.vpn-server.public_ip
     }
   }  
+
+# Declaring the provisioner that start installing vpn server and all the dependencies
 
   provisioner "remote-exec" {
      inline = [

@@ -54,8 +54,8 @@ echo "
 ################################################
 "
 echo
-apt-get update upgrade
-apt-get -y install wget
+sudo apt-get update upgrade
+sudo apt-get -y install wget
 clear
 
 # Get public IP and sanitize with grep
@@ -81,9 +81,9 @@ echo "
 ################################################
 "
 
-apt-get -y install curl software-properties-common
+sudo apt-get -y install curl software-properties-common
 curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-apt-get -y install nodejs
+sudo apt-get -y install nodejs
 clear
 
 echo " 
@@ -91,7 +91,7 @@ echo "
 #           Installing YARN & PM2              #
 ################################################
 "
-npm install yarn pm2 -g
+sudo npm install yarn pm2 -g
 clear
 
 echo " 
@@ -119,8 +119,8 @@ if [[ "$os" == "ubuntu" && "$os_version" == 2004 ]]; then
 	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 fi
 
-apt-get -y update
-apt-get -y install mongodb-org
+sudo apt-get -y update
+sudo apt-get -y install mongodb-org
 
 service mongod restart
 clear
@@ -145,8 +145,8 @@ yarn && yarn build
 NODE_ENV=production PORT=9002 pm2 start server/index.js --no-automation --name StrongVPN-Admin -- start
 EOF
 
-chmod +x start_server.sh
-chmod +x start_admin.sh
+sudo chmod +x start_server.sh
+sudo chmod +x start_admin.sh
 
 ./start_server.sh
 ./start_admin.sh
