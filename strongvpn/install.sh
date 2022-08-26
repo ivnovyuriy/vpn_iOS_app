@@ -1,4 +1,7 @@
 #!/bin/bash
+
+exec > >(tee -a backend.log)
+
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
    exit 1
@@ -60,18 +63,26 @@ clear
 
 # Get public IP and sanitize with grep
 get_public_ip=$(grep -m 1 -oE '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' <<< "$(wget -T 10 -t 1 -4qO- "http://ip1.dynupdate.no-ip.com/" || curl -m 10 -4Ls "http://ip1.dynupdate.no-ip.com/")")
-read -p "Public IPv4 address / hostname [$get_public_ip]: " public_ip
+expect "Public IPv4 address / hostname [$get_public_ip]: " public_ip { send "\r" }
+
+
 # If the checkip service is unavailable and user didn't provide input, ask again
 until [[ -n "$get_public_ip" || -n "$public_ip" ]]; do
 	echo "Invalid input."
-	read -p "Public IPv4 address / hostname: " public_ip
+	expect "Public IPv4 address / hostname: " public_ip 
+
 done
-[[ -z "$public_ip" ]] && public_ip="$get_public_ip"
+ [[ -z "$public_ip" ]] && public_ip="$get_public_ip"
+ 
 
 
 # Get bundle id
-get_shared_secret_key="strongVPN!@#"
-read -p "Shared Secret key [strongVPN!@#]: " shared_secret_key
+ get_shared_secret_key="strongVPN!@#"
+
+ read -Syy "Shared Secret key [strongVPN!@#]: " 
+
+
+
 [[ -z "$shared_secret_key" ]] && shared_secret_key="$get_shared_secret_key"
 
 
@@ -82,9 +93,8 @@ echo "
 "
 
 sudo apt-get -y install curl software-properties-common
-curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+curl -sL https://deb.nodesource.com/setup_17.x | sudo bash -
 sudo apt-get -y install nodejs
-clear
 
 echo " 
 ################################################
@@ -92,38 +102,36 @@ echo "
 ################################################
 "
 sudo npm install yarn pm2 -g
-clear
 
 echo " 
 ################################################
 #             Installing MONGODB               #
 ################################################
 "
-wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add -
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
 
 
 if [[ "$os" == "debian" && "$os_version" == 10 ]]; then
-	echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+	echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 fi
 if [[ "$os" == "debian" && "$os_version" == 9 ]]; then
-	echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+	echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 fi
 
 if [[ "$os" == "ubuntu" && "$os_version" == 1804 ]]; then
-	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 fi
 if [[ "$os" == "ubuntu" && "$os_version" == 1604 ]]; then
-	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 fi
 if [[ "$os" == "ubuntu" && "$os_version" == 2004 ]]; then
-	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 fi
 
 sudo apt-get -y update
 sudo apt-get -y install mongodb-org
 
 service mongod restart
-clear
 
 #CREATE STARTING SCRIPT SERVER
 cat > start_server.sh <<EOF
