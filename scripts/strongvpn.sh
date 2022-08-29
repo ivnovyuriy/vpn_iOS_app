@@ -26,6 +26,9 @@ mkdir -p ~/pki/{cacerts,certs,private}
 chmod 700 ~/pki
 
 
+get_public_ip=$(grep -m 1 -oE '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' <<< "$(wget -T 10 -t 1 -4qO- "http://ip1.dynupdate.no-ip.com/" || curl -m 10 -4Ls "http://ip1.dynupdate.no-ip.com/")")
+
+
 ###########################
 ##### PREPARE SCRIPTS #####
 ###########################
@@ -33,9 +36,9 @@ chmod 700 ~/pki
 echo "Preparing scripts and other files..."
 echo "Pull these values from AWS Secret manager instead"
 
-hostname="yuriy_mega_server"
+hostname="$get_public_ip"
 user="admin"
-password="cyka_ebannayaaa!!"
+password="admin"
 echo "You may add more users at a later time by editing ~/vpn/ipsec.secrets"
 
 cat > gen_certs.sh <<EOF
@@ -144,7 +147,7 @@ EOF
 
 echo "Installing dependencies..."
 sudo apt-get update -y && sudo apt-get upgrade -y
-echo "Finiched updating packages"
+echo "Finished updating packages"
 sudo apt-get install strongswan strongswan-pki libstrongswan-standard-plugins -y
 
 

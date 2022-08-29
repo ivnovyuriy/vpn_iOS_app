@@ -26,9 +26,7 @@ resource "aws_instance" "vpn-server" {
      user     = "ubuntu"
      private_key = file("yuriy_ec2.pem")
      host     = aws_instance.vpn-server.public_ip
-
     }
- 
   }
 
 # Declaring the second provisioner that provision the archive file with backend to /tmp directory
