@@ -61,24 +61,15 @@ sudo apt-get update upgrade
 sudo apt-get -y install wget
 sudo apt-get install expect -y 
 
-# Get public IP and sanitize with grep
-get_public_ip=$(grep -m 1 -oE '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' <<< "$(wget -T 10 -t 1 -4qO- "http://ip1.dynupdate.no-ip.com/" || curl -m 10 -4Ls "http://ip1.dynupdate.no-ip.com/")")
-
-expect "Public IPv4 address / hostname [$get_public_ip]: " {send -- "$get_public_ip\r"}
-
-
-# If the checkip service is unavailable and user didn't provide input, ask again
-until [[ -n "$get_public_ip" || -n "$public_ip" ]]; do
-	echo "Invalid input."
-	expect "Public IPv4 address / hostname: " {send -- "$get_public_ip\r"}
-done
-[[ -z "$public_ip" ]] && public_ip="$get_public_ip"
-
 
 # Get bundle id
-get_shared_secret_key="strongVPN!@#"
-expect "Shared Secret key [$get_shared_secret_key]: " {send -- "$get_shared_secret_key\r"}
-[[ -z "$shared_secret_key" ]] && shared_secret_key="$get_shared_secret_key"
+shared_secret_key="strongVPN!@#"
+public_ip=$1
+
+echo "############################"
+echo "my public ip is $public_ip"
+echo ""
+echo "my secret key is $shared_secret_key"
 
 echo " 
 ################################################

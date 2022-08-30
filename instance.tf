@@ -29,19 +29,6 @@ resource "aws_instance" "vpn-server" {
     }
   }
 
-# Declaring the second provisioner that provision the archive file with backend to /tmp directory
-#  provisioner "remote-exec" {
-#    inline = [
-#      "mkdir -p strongvpn"
-#    ]
-#    connection {
-#      type     = "ssh"
-#      user     = "ubuntu"
-#      private_key = file("yuriy_ec2.pem")
-#      host     = aws_instance.vpn-server.public_ip
-#      }
-#    }
-  
   provisioner "file" {                
     source      = "strongvpn/"
     destination = "./"
@@ -73,7 +60,7 @@ resource "aws_instance" "vpn-server" {
   provisioner "remote-exec" {
      inline = [
        "chmod +x ./install.sh",
-       "sudo ./install.sh"
+       "sudo ./install.sh ${aws_instance.vpn-server.public_ip}"
      ]
      connection {
       type     = "ssh"
